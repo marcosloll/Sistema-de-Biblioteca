@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
+    <link rel="stylesheet" href="./style.css" />
+
+    <title>Livros lidos | Biblioteca</title>
+  </head>
+
+  <body>
+    <header class="navbar">
+      <a
+        class="brand"
+        href="./index.html"
+        aria-label="Biblioteca - página inicial"
+      >
+        <span class="brand-mark" aria-hidden="true">
+          B
+        </span>
+
+        <span class="brand-text">
+          <strong>Biblioteca</strong>
+          <small>Seu espaço de leitura</small>
+        </span>
+      </a>
+
+      <button
+        class="menu-toggle"
+        type="button"
+        aria-label="Abrir menu"
+        aria-expanded="false"
+        aria-controls="nav-links"
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <nav
+        id="nav-links"
+        class="nav-links"
+        aria-label="Navegação principal"
+      >
+        <a href="./index.html">Início</a>
+        <a href="./favoritos.html">Favoritos</a>
+
+        <a
+          class="active"
+          href="./lidos.html"
+          aria-current="page"
+        >
+          Lidos
+        </a>
+
+        <a href="./planejados.html">Quero ler</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <h1>Livros lidos</h1>
+
+        <p>
+          Consulte os livros que você já terminou e marque
+          seus favoritos.
+        </p>
+      </section>
+
+      <section class="search-results read-page-section">
+        <div class="section-heading">
+          <span class="section-label">
+            Histórico de leitura
+          </span>
+
+          <h2>Minha coleção</h2>
+
+          <p id="status-lidos" aria-live="polite">
+            Carregando seus livros...
+          </p>
+        </div>
+
+        <!-- PESQUISA E ORDENAÇÃO -->
+
+        <div class="collection-toolbar">
+          <div class="collection-search">
+            <label for="filtro-lidos">
+              Pesquisar nos livros lidos
+            </label>
+
+            <input
+              id="filtro-lidos"
+              type="search"
+              placeholder="Digite um título, autor ou ano"
+              autocomplete="off"
+            />
+          </div>
+
+          <div class="collection-sort">
+            <label for="ordenacao-lidos">
+              Ordenar por
+            </label>
+
+            <select id="ordenacao-lidos">
+              <option value="recentes">
+                Mais recentes
+              </option>
+
+              <option value="antigos">
+                Mais antigos
+              </option>
+
+              <option value="titulo-az">
+                Título: A–Z
+              </option>
+
+              <option value="titulo-za">
+                Título: Z–A
+              </option>
+
+              <option value="autor-az">
+                Autor: A–Z
+              </option>
+
+              <option value="ano-recente">
+                Ano: mais recente
+              </option>
+
+              <option value="ano-antigo">
+                Ano: mais antigo
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <!-- NENHUM LIVRO CADASTRADO -->
+
+        <div
+          id="estado-vazio-lidos"
+          class="empty-state"
+          hidden
+        >
+          <div
+            class="empty-state-icon"
+            aria-hidden="true"
+          >
+            📖
+          </div>
+
+          <div class="empty-state-content">
+            <h3>Nenhum livro lido</h3>
+
+            <p>
+              Pesquise um livro na página inicial e clique
+              em “Adicionar aos lidos”.
+            </p>
+          </div>
+        </div>
+
+        <!-- NENHUM RESULTADO NO FILTRO -->
+
+        <div
+          id="estado-sem-resultados-lidos"
+          class="empty-state"
+          hidden
+        >
+          <div
+            class="empty-state-icon"
+            aria-hidden="true"
+          >
+            🔎
+          </div>
+
+          <div class="empty-state-content">
+            <h3>Nenhum livro encontrado</h3>
+
+            <p>
+              Tente pesquisar usando outro título, autor ou
+              ano.
+            </p>
+          </div>
+        </div>
+
+        <ul
+          id="lista-lidos"
+          class="search-results-list"
+        >
+          <!-- Adicionado pelo JavaScript -->
+        </ul>
+      </section>
+    </main>
+
+    <script src="./notifications.js"></script>
+    <script src="./lidos.js"></script>
+  </body>
+</html>

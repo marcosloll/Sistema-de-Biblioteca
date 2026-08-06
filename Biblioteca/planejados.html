@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" href="./style.css" />
+
+    <title>Quero ler | Biblioteca</title>
+  </head>
+
+  <body>
+    <header class="navbar">
+      <a
+        class="brand"
+        href="./index.html"
+        aria-label="Biblioteca - página inicial"
+      >
+        <span class="brand-mark" aria-hidden="true">B</span>
+
+        <span class="brand-text">
+          <strong>Biblioteca</strong>
+          <small>Seu espaço de leitura</small>
+        </span>
+      </a>
+
+      <button
+        class="menu-toggle"
+        type="button"
+        aria-label="Abrir menu"
+        aria-expanded="false"
+        aria-controls="nav-links"
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <nav id="nav-links" class="nav-links" aria-label="Navegação principal">
+        <a href="./index.html">Início</a>
+        <a href="./favoritos.html">Favoritos</a>
+        <a href="./lidos.html">Lidos</a>
+        <a class="active" href="./planejados.html">Quero ler</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <h1>Quero ler</h1>
+
+        <p>Organize os livros que você pretende ler futuramente.</p>
+      </section>
+
+      <section class="search-results planned-section">
+        <div class="section-heading">
+          <span class="section-label">Lista de leitura</span>
+
+          <h2>Leituras planejadas</h2>
+
+          <p id="status-planejados" aria-live="polite">
+            Carregando sua lista...
+          </p>
+        </div>
+
+        <div id="estado-vazio-planejados" class="empty-state" hidden>
+          <div class="empty-state-icon" aria-hidden="true">📚</div>
+
+          <div class="empty-state-content">
+            <h3>Nenhum livro planejado</h3>
+
+            <p>Pesquise um livro na página inicial e clique em “Quero ler”.</p>
+          </div>
+        </div>
+
+        <ul id="lista-planejados" class="search-results-list">
+          <!-- Os livros planejados serão adicionados pelo JavaScript -->
+        </ul>
+      </section>
+    </main>
+
+    <script src="./notifications.js"></script>
+    <script src="./planejados.js"></script>
+  </body>
+</html>

@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <meta name="theme-color" content="#2b2118" />
+
+    <meta
+      name="description"
+      content="Biblioteca pessoal para organizar livros lidos, favoritos e leituras planejadas."
+    />
+
+    <link rel="stylesheet" href="style.css" />
+
+    <title>Biblioteca</title>
+  </head>
+
+  <body>
+    <header class="navbar">
+      <a
+        class="brand"
+        href="index.html"
+        aria-label="Biblioteca - página inicial"
+      >
+        <span class="brand-mark" aria-hidden="true">B</span>
+
+        <span class="brand-text">
+          <strong>Biblioteca</strong>
+          <small>Seu espaço de leitura</small>
+        </span>
+      </a>
+
+      <button
+        class="menu-toggle"
+        type="button"
+        aria-label="Abrir menu"
+        aria-expanded="false"
+        aria-controls="menu-principal"
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <nav id="menu-principal" class="nav-links" aria-label="Menu principal">
+        <a class="active" href="index.html" aria-current="page"> Início </a>
+
+        <a href="favoritos.html">Favoritos</a>
+        <a href="lidos.html">Lidos</a>
+        <a href="planejados.html">Quero ler</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <h1>Bem-vindo à Biblioteca</h1>
+
+        <p>
+          Aqui você poderá marcar seus livros favoritos, os que planeja ler e os
+          que já leu.
+        </p>
+      </section>
+
+      <section class="search">
+        <h2>Pesquisar na biblioteca</h2>
+
+        <form id="pesquisa-form">
+          <label class="sr-only" for="tipo-pesquisa"> Forma de pesquisa </label>
+
+          <select
+            id="tipo-pesquisa"
+            name="tipo-pesquisa"
+            aria-label="Forma de pesquisa"
+          >
+            <option value="titulo" selected>Título</option>
+            <option value="autor">Autor</option>
+            <option value="geral">Busca geral</option>
+          </select>
+
+          <label class="sr-only" for="pesquisa-titulo">
+            Termo da pesquisa
+          </label>
+
+          <input
+            type="search"
+            id="pesquisa-titulo"
+            name="busca"
+            placeholder="Digite o título, autor ou termo"
+            autocomplete="off"
+            aria-describedby="aviso-fonte-pesquisa"
+          />
+
+          <button type="submit" id="btn-pesquisar">Pesquisar</button>
+        </form>
+
+        <p id="aviso-fonte-pesquisa" class="search-source-note">
+          Livros são pesquisados no Google Books. Mangás e quadrinhos são
+          filtrados desta busca.
+        </p>
+      </section>
+
+      <section id="resultados-pesquisa" class="search-results" hidden>
+        <div class="section-heading">
+          <span id="fonte-resultados-label" class="section-label">
+            Google Books · somente livros
+          </span>
+
+          <h2>Resultados da pesquisa</h2>
+
+          <p id="status-pesquisa" aria-live="polite"></p>
+        </div>
+
+        <ul id="lista-resultados" class="search-results-list">
+          <!-- Os resultados serão adicionados pelo JavaScript -->
+        </ul>
+
+        <nav
+          id="paginacao-pesquisa"
+          class="pagination"
+          aria-label="Páginas dos resultados da pesquisa"
+          hidden
+        >
+          <p id="resumo-paginacao" class="pagination-summary"></p>
+
+          <div id="botoes-paginacao" class="pagination-buttons"></div>
+        </nav>
+      </section>
+
+      <section class="books">
+        <div class="section-heading">
+          <span class="section-label"> Minha coleção </span>
+
+          <h2>Adicionar livro</h2>
+
+          <p>Cadastre manualmente um livro que você já leu.</p>
+        </div>
+
+        <form id="adicionar-form">
+          <div class="form-field">
+            <label for="titulo"> Título </label>
+
+            <input
+              id="titulo"
+              name="titulo"
+              type="text"
+              placeholder="Ex.: Crime e Castigo"
+              autocomplete="off"
+              required
+            />
+          </div>
+
+          <div class="form-field">
+            <label for="autor"> Autor </label>
+
+            <input
+              id="autor"
+              name="autor"
+              type="text"
+              placeholder="Ex.: Fiódor Dostoiévski"
+              autocomplete="off"
+              required
+            />
+          </div>
+
+          <div class="form-field">
+            <label for="ano"> Ano de publicação </label>
+
+            <input
+              id="ano"
+              name="ano"
+              type="number"
+              placeholder="Ex.: 1866"
+              min="0"
+              max="2100"
+              inputmode="numeric"
+              required
+            />
+          </div>
+
+          <button id="btn-adicionar" type="submit">Adicionar livro</button>
+        </form>
+      </section>
+
+      <section class="read-books">
+        <div class="section-heading">
+          <span class="section-label"> Histórico de leitura </span>
+
+          <h2>Livros já lidos</h2>
+
+          <p>Acompanhe os livros que você já terminou.</p>
+        </div>
+
+        <div id="estado-vazio" class="empty-state">
+          <div class="empty-state-icon" aria-hidden="true">📚</div>
+
+          <div class="empty-state-content">
+            <h3>Nenhum livro cadastrado</h3>
+
+            <p>
+              Pesquise um livro ou use o formulário acima para adicionar sua
+              primeira leitura.
+            </p>
+          </div>
+        </div>
+
+        <ul id="lista-livros" class="books-list">
+          <!-- Os livros serão adicionados pelo JavaScript -->
+        </ul>
+      </section>
+
+      <section class="data-tools" aria-labelledby="titulo-backup">
+        <div class="section-heading">
+          <span class="section-label">Segurança dos dados</span>
+
+          <h2 id="titulo-backup">Backup da biblioteca</h2>
+
+          <p>
+            Exporte seus livros e autores favoritos antes de limpar os dados do
+            navegador ou trocar de computador.
+          </p>
+        </div>
+
+        <div class="backup-actions">
+          <button
+            id="btn-exportar-backup"
+            class="backup-button backup-button-primary"
+            type="button"
+          >
+            Exportar backup
+          </button>
+
+          <button
+            id="btn-importar-backup"
+            class="backup-button backup-button-secondary"
+            type="button"
+          >
+            Importar backup
+          </button>
+
+          <input
+            id="arquivo-backup"
+            class="sr-only"
+            type="file"
+            accept="application/json,.json"
+          />
+        </div>
+
+        <p class="backup-help">
+          A importação substitui os dados atuais somente depois da sua
+          confirmação. O arquivo deve ter sido exportado por este site.
+        </p>
+
+        <p id="status-backup" class="backup-status" aria-live="polite"></p>
+      </section>
+    </main>
+
+    <script src="config.js"></script>
+    <script src="notifications.js"></script>
+    <script src="backup.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

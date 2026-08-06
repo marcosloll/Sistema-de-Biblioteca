@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
+    <link rel="stylesheet" href="./style.css" />
+
+    <title>Favoritos | Biblioteca</title>
+  </head>
+
+  <body>
+    <header class="navbar">
+      <a
+        class="brand"
+        href="./index.html"
+        aria-label="Biblioteca - página inicial"
+      >
+        <span class="brand-mark" aria-hidden="true">
+          B
+        </span>
+
+        <span class="brand-text">
+          <strong>Biblioteca</strong>
+          <small>Seu espaço de leitura</small>
+        </span>
+      </a>
+
+      <button
+        class="menu-toggle"
+        type="button"
+        aria-label="Abrir menu"
+        aria-expanded="false"
+        aria-controls="nav-links"
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <nav
+        id="nav-links"
+        class="nav-links"
+        aria-label="Navegação principal"
+      >
+        <a href="./index.html">Início</a>
+
+        <a
+          class="active"
+          href="./favoritos.html"
+          aria-current="page"
+        >
+          Favoritos
+        </a>
+
+        <a href="./lidos.html">Lidos</a>
+        <a href="./planejados.html">Quero ler</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <h1>Livros e autores favoritos</h1>
+
+        <p>
+          Guarde as obras e os escritores que mais marcaram
+          sua experiência de leitura.
+        </p>
+      </section>
+
+      <section class="search-results favorites-section">
+        <div
+          class="favorites-tabs"
+          role="tablist"
+          aria-label="Categorias de favoritos"
+        >
+          <button
+            id="aba-livros"
+            class="favorites-tab is-active"
+            type="button"
+            role="tab"
+            aria-selected="true"
+            aria-controls="painel-livros-favoritos"
+            tabindex="0"
+          >
+            Livros favoritos
+
+            <span
+              id="contador-aba-livros"
+              class="favorites-tab-count"
+            >
+              0
+            </span>
+          </button>
+
+          <button
+            id="aba-autores"
+            class="favorites-tab"
+            type="button"
+            role="tab"
+            aria-selected="false"
+            aria-controls="painel-autores-favoritos"
+            tabindex="-1"
+          >
+            Autores favoritos
+
+            <span
+              id="contador-aba-autores"
+              class="favorites-tab-count"
+            >
+              0
+            </span>
+          </button>
+        </div>
+
+        <!-- LIVROS FAVORITOS -->
+
+        <div
+          id="painel-livros-favoritos"
+          class="favorites-panel"
+          role="tabpanel"
+          aria-labelledby="aba-livros"
+        >
+          <div class="section-heading">
+            <span class="section-label">
+              Sua seleção
+            </span>
+
+            <h2>Meus livros favoritos</h2>
+
+            <p
+              id="status-favoritos"
+              aria-live="polite"
+            >
+              Carregando seus livros favoritos...
+            </p>
+          </div>
+
+          <div
+            id="estado-vazio-favoritos"
+            class="empty-state"
+            hidden
+          >
+            <div
+              class="empty-state-icon"
+              aria-hidden="true"
+            >
+              ⭐
+            </div>
+
+            <div class="empty-state-content">
+              <h3>Nenhum livro favorito</h3>
+
+              <p>
+                Abra a página de livros lidos e clique em
+                “Favoritar”.
+              </p>
+            </div>
+          </div>
+
+          <ul
+            id="lista-favoritos"
+            class="search-results-list"
+          >
+            <!-- Livros adicionados pelo JavaScript -->
+          </ul>
+        </div>
+
+        <!-- AUTORES FAVORITOS -->
+
+        <div
+          id="painel-autores-favoritos"
+          class="favorites-panel"
+          role="tabpanel"
+          aria-labelledby="aba-autores"
+          hidden
+        >
+          <div class="section-heading">
+            <span class="section-label">
+              Escritores e artistas
+            </span>
+
+            <h2>Meus autores favoritos</h2>
+
+            <p
+              id="status-autores-favoritos"
+              aria-live="polite"
+            >
+              Carregando seus autores favoritos...
+            </p>
+          </div>
+
+          <div
+            id="estado-vazio-autores"
+            class="empty-state"
+            hidden
+          >
+            <div
+              class="empty-state-icon"
+              aria-hidden="true"
+            >
+              ✍️
+            </div>
+
+            <div class="empty-state-content">
+              <h3>Nenhum autor favorito</h3>
+
+              <p>
+                Favorite um autor usando o botão de estrela
+                presente nos cartões dos livros.
+              </p>
+            </div>
+          </div>
+
+          <ul
+            id="lista-autores-favoritos"
+            class="authors-favorites-list"
+          >
+            <!-- Autores adicionados pelo JavaScript -->
+          </ul>
+        </div>
+      </section>
+    </main>
+
+    <script src="./notifications.js"></script>
+    <script src="./favoritos.js"></script>
+  </body>
+</html>
