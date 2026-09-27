@@ -25,15 +25,9 @@ if (menuButton && navLinks) {
 
     menuButton.classList.toggle("is-open", menuEstaAberto);
 
-    document.body.classList.toggle(
-      "menu-open",
-      menuEstaAberto,
-    );
+    document.body.classList.toggle("menu-open", menuEstaAberto);
 
-    menuButton.setAttribute(
-      "aria-expanded",
-      String(menuEstaAberto),
-    );
+    menuButton.setAttribute("aria-expanded", String(menuEstaAberto));
 
     menuButton.setAttribute(
       "aria-label",
@@ -56,19 +50,9 @@ document.addEventListener("keydown", (event) => {
    NOTIFICAÇÕES
 ========================= */
 
-function notificar(
-  mensagem,
-  tipo = "sucesso",
-  duracao = 3500,
-  acao = null,
-) {
+function notificar(mensagem, tipo = "sucesso", duracao = 3500, acao = null) {
   if (typeof window.mostrarNotificacao === "function") {
-    window.mostrarNotificacao(
-      mensagem,
-      tipo,
-      duracao,
-      acao,
-    );
+    window.mostrarNotificacao(mensagem, tipo, duracao, acao);
   }
 }
 
@@ -76,59 +60,19 @@ function notificar(
    ELEMENTOS
 ========================= */
 
-const listaPlanejados = document.querySelector(
-  "#lista-planejados",
-);
+const listaPlanejados = document.querySelector("#lista-planejados");
 
 const estadoVazioPlanejados = document.querySelector(
   "#estado-vazio-planejados",
 );
 
-const statusPlanejados = document.querySelector(
-  "#status-planejados",
-);
+const statusPlanejados = document.querySelector("#status-planejados");
 
 /* =========================
-   ARMAZENAMENTO
+   ESTADO DA PÁGINA
 ========================= */
 
-let livros = carregarLivros();
-
-function carregarLivros() {
-  const livrosSalvos = localStorage.getItem("livros");
-
-  if (!livrosSalvos) {
-    return [];
-  }
-
-  try {
-    const livrosCarregados = JSON.parse(livrosSalvos);
-
-    if (!Array.isArray(livrosCarregados)) {
-      return [];
-    }
-
-    return livrosCarregados.map((livro) => ({
-      ...livro,
-      googleId: livro.googleId ?? null,
-      capa: livro.capa ?? null,
-      lido: livro.lido ?? true,
-      planejado: livro.planejado ?? false,
-      favorito: livro.favorito ?? false,
-    }));
-  } catch (erro) {
-    console.error(
-      "Não foi possível carregar os livros:",
-      erro,
-    );
-
-    return [];
-  }
-}
-
-function salvarLivros() {
-  localStorage.setItem("livros", JSON.stringify(livros));
-}
+let livros = [];
 
 /* =========================
    CAPA SEM IMAGEM
@@ -140,10 +84,7 @@ function criarPlaceholderCapa() {
   placeholder.classList.add("cover-placeholder");
   placeholder.textContent = "📖";
 
-  placeholder.setAttribute(
-    "aria-label",
-    "Livro sem capa disponível",
-  );
+  placeholder.setAttribute("aria-label", "Livro sem capa disponível");
 
   return placeholder;
 }
@@ -152,7 +93,7 @@ function criarPlaceholderCapa() {
    MARCAR COMO LIDO
 ========================= */
 
-function marcarComoLido(id) {
+async function marcarComoLido(id) {
   const livro = livros.find((item) => item.id === id);
 
   if (!livro) {
@@ -162,33 +103,23 @@ function marcarComoLido(id) {
   livro.lido = true;
   livro.planejado = false;
 
-  salvarLivros();
+  await atualizarStatusLivro(livro);
   renderizarPlanejados();
 
-  notificar(
-    `"${livro.titulo}" foi marcado como lido.`,
-  );
+  notificar(`"${livro.titulo}" foi marcado como lido.`);
 }
 
 /* =========================
    REMOVER COM DESFAZER
 ========================= */
 
-function restaurarNosPlanejados(
-  livroRemovido,
-  indiceAnterior,
-) {
-  const livroExistente = livros.find(
-    (livro) => livro.id === livroRemovido.id,
-  );
+async function restaurarNosPlanejados(livroRemovido, indiceAnterior) {
+  const livroExistente = livros.find((livro) => livro.id === livroRemovido.id);
 
   if (livroExistente) {
     livroExistente.planejado = true;
   } else {
-    const indiceSeguro = Math.min(
-      indiceAnterior,
-      livros.length,
-    );
+    const indiceSeguro = Math.min(indiceAnterior, livros.length);
 
     livros.splice(indiceSeguro, 0, {
       ...livroRemovido,
@@ -196,18 +127,17 @@ function restaurarNosPlanejados(
     });
   }
 
-  salvarLivros();
+  const livroRestaurado = livros.find((livro) => livro.id === livroRemovido.id);
+
+  await atualizarStatusLivro(livroRestaurado);
+
   renderizarPlanejados();
 
-  notificar(
-    `"${livroRemovido.titulo}" voltou para a lista Quero ler.`,
-  );
+  notificar(`"${livroRemovido.titulo}" voltou para a lista Quero ler.`);
 }
 
-function removerDosPlanejados(id) {
-  const indiceLivro = livros.findIndex(
-    (item) => item.id === id,
-  );
+async function removerDosPlanejados(id) {
+  const indiceLivro = livros.findIndex((item) => item.id === id);
 
   if (indiceLivro === -1) {
     return;
@@ -219,14 +149,12 @@ function removerDosPlanejados(id) {
 
   livros[indiceLivro].planejado = false;
 
-  if (
-    !livros[indiceLivro].lido &&
-    !livros[indiceLivro].favorito
-  ) {
+  await atualizarStatusLivro(livros[indiceLivro]);
+
+  if (!livros[indiceLivro].lido && !livros[indiceLivro].favorito) {
     livros.splice(indiceLivro, 1);
   }
 
-  salvarLivros();
   renderizarPlanejados();
 
   notificar(
@@ -237,10 +165,7 @@ function removerDosPlanejados(id) {
       texto: "Desfazer",
 
       aoClicar: () => {
-        restaurarNosPlanejados(
-          livroRemovido,
-          indiceLivro,
-        );
+        restaurarNosPlanejados(livroRemovido, indiceLivro);
       },
     },
   );
@@ -298,10 +223,7 @@ function criarCartaoPlanejado(livro) {
   botaoLido.classList.add("btn-mark-read");
   botaoLido.textContent = "Marcar como lido";
 
-  botaoLido.setAttribute(
-    "aria-label",
-    `Marcar ${livro.titulo} como lido`,
-  );
+  botaoLido.setAttribute("aria-label", `Marcar ${livro.titulo} como lido`);
 
   botaoLido.addEventListener("click", () => {
     marcarComoLido(livro.id);
@@ -334,24 +256,16 @@ function criarCartaoPlanejado(livro) {
 ========================= */
 
 function renderizarPlanejados() {
-  if (
-    !listaPlanejados ||
-    !estadoVazioPlanejados ||
-    !statusPlanejados
-  ) {
+  if (!listaPlanejados || !estadoVazioPlanejados || !statusPlanejados) {
     return;
   }
 
   listaPlanejados.innerHTML = "";
 
-  const livrosPlanejados = livros.filter(
-    (livro) => livro.planejado === true,
-  );
+  const livrosPlanejados = livros.filter((livro) => livro.planejado === true);
 
   livrosPlanejados.forEach((livro) => {
-    listaPlanejados.appendChild(
-      criarCartaoPlanejado(livro),
-    );
+    listaPlanejados.appendChild(criarCartaoPlanejado(livro));
   });
 
   const listaEstaVazia = livrosPlanejados.length === 0;
@@ -359,8 +273,7 @@ function renderizarPlanejados() {
   estadoVazioPlanejados.hidden = !listaEstaVazia;
 
   if (listaEstaVazia) {
-    statusPlanejados.textContent =
-      "Sua lista de leitura está vazia.";
+    statusPlanejados.textContent = "Sua lista de leitura está vazia.";
 
     return;
   }
@@ -375,4 +288,9 @@ function renderizarPlanejados() {
    INICIALIZAÇÃO
 ========================= */
 
-renderizarPlanejados();
+async function iniciarPaginaPlanejados() {
+  livros = await carregarLivrosDoBanco();
+  renderizarPlanejados();
+}
+
+iniciarPaginaPlanejados();

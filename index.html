@@ -210,55 +210,11 @@
         </ul>
       </section>
 
-      <section class="data-tools" aria-labelledby="titulo-backup">
-        <div class="section-heading">
-          <span class="section-label">Segurança dos dados</span>
-
-          <h2 id="titulo-backup">Backup da biblioteca</h2>
-
-          <p>
-            Exporte seus livros e autores favoritos antes de limpar os dados do
-            navegador ou trocar de computador.
-          </p>
-        </div>
-
-        <div class="backup-actions">
-          <button
-            id="btn-exportar-backup"
-            class="backup-button backup-button-primary"
-            type="button"
-          >
-            Exportar backup
-          </button>
-
-          <button
-            id="btn-importar-backup"
-            class="backup-button backup-button-secondary"
-            type="button"
-          >
-            Importar backup
-          </button>
-
-          <input
-            id="arquivo-backup"
-            class="sr-only"
-            type="file"
-            accept="application/json,.json"
-          />
-        </div>
-
-        <p class="backup-help">
-          A importação substitui os dados atuais somente depois da sua
-          confirmação. O arquivo deve ter sido exportado por este site.
-        </p>
-
-        <p id="status-backup" class="backup-status" aria-live="polite"></p>
-      </section>
     </main>
 
     <script src="config.js"></script>
     <script src="notifications.js"></script>
-    <script src="backup.js"></script>
+    <script src="books-api.js"></script>
     <script src="script.js"></script>
   </body>
 </html>

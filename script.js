@@ -108,7 +108,7 @@ const estadoVazio = document.querySelector("#estado-vazio");
 
 const RESULTADOS_POR_PAGINA = 8;
 
-let livros = carregarLivros();
+let livros = [];
 let autoresFavoritos = carregarAutoresFavoritos();
 let livroEmEdicao = null;
 let ultimosResultadosPesquisa = [];
@@ -122,61 +122,8 @@ let totalPaginasPesquisa = 0;
 let controladorPesquisa = null;
 
 /* =========================
-   LOCAL STORAGE
+   AUTORES NO LOCAL STORAGE
 ========================= */
-
-function carregarLivros() {
-  const livrosSalvos = localStorage.getItem("livros");
-
-  if (!livrosSalvos) {
-    return [];
-  }
-
-  try {
-    const livrosCarregados = JSON.parse(livrosSalvos);
-
-    if (!Array.isArray(livrosCarregados)) {
-      return [];
-    }
-
-    return livrosCarregados.map((livro) => {
-      const fonteAutores =
-        Array.isArray(livro.autores) && livro.autores.length > 0
-          ? livro.autores
-          : livro.autor
-            ? [livro.autor]
-            : [];
-
-      const fonte = livro.fonte ?? (livro.googleId ? "google-books" : "manual");
-
-      const tipo = livro.tipo ?? "livro";
-
-      const idExterno = livro.idExterno ?? livro.googleId ?? null;
-
-      return {
-        ...livro,
-        fonte,
-        tipo,
-        idExterno,
-        googleId:
-          livro.googleId ?? (fonte === "google-books" ? idExterno : null),
-        capa: normalizarUrlCapa(livro.capa),
-        lido: livro.lido ?? true,
-        planejado: livro.planejado ?? false,
-        favorito: livro.favorito ?? false,
-        autores: separarNomesAutores(fonteAutores),
-      };
-    });
-  } catch (erro) {
-    console.error("Não foi possível carregar os livros:", erro);
-
-    return [];
-  }
-}
-
-function salvarLivros() {
-  localStorage.setItem("livros", JSON.stringify(livros));
-}
 
 function carregarAutoresFavoritos() {
   const autoresSalvos = localStorage.getItem("autoresFavoritos");
@@ -526,20 +473,7 @@ function removerAutorFavorito(nome) {
   );
 }
 
-function alternarAutorFavorito(nome) {
-  if (autorEstaFavoritado(nome)) {
-    removerAutorFavorito(nome);
-    return;
-  }
-
-  adicionarAutorFavorito(nome);
-}
-
-/* =========================
-   CADASTRO DE LIVROS
-========================= */
-
-function adicionarLivro(
+async function adicionarLivro(
   titulo,
   autor,
   ano,
@@ -596,9 +530,9 @@ function adicionarLivro(
       livroExistente.lido = false;
       livroExistente.planejado = true;
     }
+    await atualizarStatusLivro(livroExistente);
   } else {
     const novoLivro = {
-      id: gerarId(),
       fonte,
       tipo,
       idExterno,
@@ -613,10 +547,10 @@ function adicionarLivro(
       favorito: false,
     };
 
+    await adicionarLivroNoBanco(novoLivro);
     livros.push(novoLivro);
   }
 
-  salvarLivros();
   renderizarLivros();
   atualizarResultadosAtuais();
 }
@@ -1404,7 +1338,7 @@ function iniciarEdicao(id) {
   notificar(`Editando "${livroEncontrado.titulo}".`, "aviso");
 }
 
-function salvarEdicao(titulo, autor, ano) {
+async function salvarEdicao(titulo, autor, ano) {
   const livroEditado = livros.find((livro) => livro.id === livroEmEdicao);
 
   livros = livros.map((livro) => {
@@ -1421,13 +1355,18 @@ function salvarEdicao(titulo, autor, ano) {
     return livro;
   });
 
+  const livroParaAtualizar = livros.find((livro) => livro.id === livroEmEdicao);
+
+  if (livroParaAtualizar) {
+    await atualizarDadosLivro(livroParaAtualizar);
+  }
+
   livroEmEdicao = null;
 
   if (botaoAdicionar) {
     botaoAdicionar.textContent = "Adicionar livro";
   }
 
-  salvarLivros();
   renderizarLivros();
   atualizarResultadosAtuais();
 
@@ -1438,27 +1377,7 @@ function salvarEdicao(titulo, autor, ano) {
    EXCLUSÃO COM DESFAZER
 ========================= */
 
-function restaurarLivroExcluido(livroRemovido, indiceAnterior) {
-  const livroJaExiste = livros.some((livro) => livro.id === livroRemovido.id);
-
-  if (livroJaExiste) {
-    return;
-  }
-
-  const indiceSeguro = Math.min(indiceAnterior, livros.length);
-
-  livros.splice(indiceSeguro, 0, {
-    ...livroRemovido,
-  });
-
-  salvarLivros();
-  renderizarLivros();
-  atualizarResultadosAtuais();
-
-  notificar(`"${livroRemovido.titulo}" foi restaurado.`);
-}
-
-function excluirLivro(id) {
+async function excluirLivro(id) {
   const indiceLivro = livros.findIndex((livro) => livro.id === id);
 
   if (indiceLivro === -1) {
@@ -1468,6 +1387,8 @@ function excluirLivro(id) {
   const livroRemovido = {
     ...livros[indiceLivro],
   };
+
+  await excluirLivroDoBanco(id);
 
   livros.splice(indiceLivro, 1);
 
@@ -1481,7 +1402,6 @@ function excluirLivro(id) {
     formularioAdicionar?.reset();
   }
 
-  salvarLivros();
   renderizarLivros();
   atualizarResultadosAtuais();
 
@@ -1492,6 +1412,24 @@ function excluirLivro(id) {
       restaurarLivroExcluido(livroRemovido, indiceLivro);
     },
   });
+}
+
+async function restaurarLivroExcluido(livroRemovido, indiceLivro) {
+  const jaExiste = livros.some((livro) => livro.id === livroRemovido.id);
+  if (jaExiste) {
+    return;
+  }
+
+  const indiceSeguro = Math.min(indiceLivro, livros.length);
+
+  await adicionarLivroNoBanco(livroRemovido);
+
+  livros.splice(indiceSeguro, 0, livroRemovido);
+
+  renderizarLivros();
+  atualizarResultadosAtuais();
+
+  notificar(`"${livroRemovido.titulo}" foi restaurado.`, "sucesso", 3000);
 }
 
 /* =========================
@@ -1580,9 +1518,12 @@ async function aplicarPesquisaDaURL() {
    INICIALIZAÇÃO
 ========================= */
 
-salvarLivros();
-salvarAutoresFavoritos();
+async function iniciarPaginaInicial() {
+  livros = await carregarLivrosDoBanco();
+  salvarAutoresFavoritos();
+  atualizarInterfacePesquisa();
+  renderizarLivros();
+  aplicarPesquisaDaURL();
+}
 
-atualizarInterfacePesquisa();
-renderizarLivros();
-aplicarPesquisaDaURL();
+iniciarPaginaInicial();

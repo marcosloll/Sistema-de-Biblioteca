@@ -5,9 +5,7 @@
 const menuButton = document.querySelector(".menu-toggle");
 const navLinks = document.querySelector(".nav-links");
 
-const linksDoMenu = document.querySelectorAll(
-  ".nav-links a",
-);
+const linksDoMenu = document.querySelectorAll(".nav-links a");
 
 function fecharMenu() {
   if (!menuButton || !navLinks) {
@@ -19,42 +17,24 @@ function fecharMenu() {
 
   document.body.classList.remove("menu-open");
 
-  menuButton.setAttribute(
-    "aria-expanded",
-    "false",
-  );
+  menuButton.setAttribute("aria-expanded", "false");
 
-  menuButton.setAttribute(
-    "aria-label",
-    "Abrir menu",
-  );
+  menuButton.setAttribute("aria-label", "Abrir menu");
 }
 
 if (menuButton && navLinks) {
   menuButton.addEventListener("click", () => {
-    const menuEstaAberto =
-      navLinks.classList.toggle("is-open");
+    const menuEstaAberto = navLinks.classList.toggle("is-open");
 
-    menuButton.classList.toggle(
-      "is-open",
-      menuEstaAberto,
-    );
+    menuButton.classList.toggle("is-open", menuEstaAberto);
 
-    document.body.classList.toggle(
-      "menu-open",
-      menuEstaAberto,
-    );
+    document.body.classList.toggle("menu-open", menuEstaAberto);
 
-    menuButton.setAttribute(
-      "aria-expanded",
-      String(menuEstaAberto),
-    );
+    menuButton.setAttribute("aria-expanded", String(menuEstaAberto));
 
     menuButton.setAttribute(
       "aria-label",
-      menuEstaAberto
-        ? "Fechar menu"
-        : "Abrir menu",
+      menuEstaAberto ? "Fechar menu" : "Abrir menu",
     );
   });
 }
@@ -73,22 +53,9 @@ document.addEventListener("keydown", (event) => {
    NOTIFICAÇÕES
 ========================= */
 
-function notificar(
-  mensagem,
-  tipo = "sucesso",
-  duracao = 3500,
-  acao = null,
-) {
-  if (
-    typeof window.mostrarNotificacao ===
-    "function"
-  ) {
-    window.mostrarNotificacao(
-      mensagem,
-      tipo,
-      duracao,
-      acao,
-    );
+function notificar(mensagem, tipo = "sucesso", duracao = 3500, acao = null) {
+  if (typeof window.mostrarNotificacao === "function") {
+    window.mostrarNotificacao(mensagem, tipo, duracao, acao);
   }
 }
 
@@ -96,65 +63,41 @@ function notificar(
    ELEMENTOS DAS ABAS
 ========================= */
 
-const abaLivros = document.querySelector(
-  "#aba-livros",
-);
+const abaLivros = document.querySelector("#aba-livros");
 
-const abaAutores = document.querySelector(
-  "#aba-autores",
-);
+const abaAutores = document.querySelector("#aba-autores");
 
-const painelLivros = document.querySelector(
-  "#painel-livros-favoritos",
-);
+const painelLivros = document.querySelector("#painel-livros-favoritos");
 
-const painelAutores = document.querySelector(
-  "#painel-autores-favoritos",
-);
+const painelAutores = document.querySelector("#painel-autores-favoritos");
 
-const contadorAbaLivros = document.querySelector(
-  "#contador-aba-livros",
-);
+const contadorAbaLivros = document.querySelector("#contador-aba-livros");
 
-const contadorAbaAutores = document.querySelector(
-  "#contador-aba-autores",
-);
+const contadorAbaAutores = document.querySelector("#contador-aba-autores");
 
 /* =========================
    ELEMENTOS DOS LIVROS
 ========================= */
 
-const listaFavoritos = document.querySelector(
-  "#lista-favoritos",
-);
+const listaFavoritos = document.querySelector("#lista-favoritos");
 
-const estadoVazioFavoritos =
-  document.querySelector(
-    "#estado-vazio-favoritos",
-  );
+const estadoVazioFavoritos = document.querySelector("#estado-vazio-favoritos");
 
-const statusFavoritos = document.querySelector(
-  "#status-favoritos",
-);
+const statusFavoritos = document.querySelector("#status-favoritos");
 
 /* =========================
    ELEMENTOS DOS AUTORES
 ========================= */
 
-const listaAutoresFavoritos =
-  document.querySelector(
-    "#lista-autores-favoritos",
-  );
+const listaAutoresFavoritos = document.querySelector(
+  "#lista-autores-favoritos",
+);
 
-const estadoVazioAutores =
-  document.querySelector(
-    "#estado-vazio-autores",
-  );
+const estadoVazioAutores = document.querySelector("#estado-vazio-autores");
 
-const statusAutoresFavoritos =
-  document.querySelector(
-    "#status-autores-favoritos",
-  );
+const statusAutoresFavoritos = document.querySelector(
+  "#status-autores-favoritos",
+);
 
 /* =========================
    FUNÇÕES AUXILIARES
@@ -181,18 +124,13 @@ function gerarIdAutor(nome) {
     return globalThis.crypto.randomUUID();
   }
 
-  return `${Date.now()}-${Math.random()
-    .toString(16)
-    .slice(2)}`;
+  return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
 function obterAutoresLivro(livro) {
   let autores = [];
 
-  if (
-    Array.isArray(livro.autores) &&
-    livro.autores.length > 0
-  ) {
+  if (Array.isArray(livro.autores) && livro.autores.length > 0) {
     autores = livro.autores;
   } else if (livro.autor) {
     autores = [livro.autor];
@@ -207,8 +145,7 @@ function obterAutoresLivro(livro) {
     if (
       !nome ||
       !nomeNormalizado ||
-      nomeNormalizado ===
-        "autor nao informado"
+      nomeNormalizado === "autor nao informado"
     ) {
       return;
     }
@@ -222,97 +159,26 @@ function obterAutoresLivro(livro) {
 }
 
 /* =========================
-   LIVROS NO LOCAL STORAGE
+   ESTADO DOS LIVROS
 ========================= */
 
-let livros = carregarLivros();
-
-function carregarLivros() {
-  const livrosSalvos =
-    localStorage.getItem("livros");
-
-  if (!livrosSalvos) {
-    return [];
-  }
-
-  try {
-    const livrosCarregados =
-      JSON.parse(livrosSalvos);
-
-    if (!Array.isArray(livrosCarregados)) {
-      return [];
-    }
-
-    return livrosCarregados.map((livro) => {
-      const autoresNormalizados =
-        Array.isArray(livro.autores)
-          ? livro.autores
-              .map((autor) =>
-                String(autor ?? "").trim(),
-              )
-              .filter(Boolean)
-          : livro.autor
-            ? [String(livro.autor).trim()]
-            : [];
-
-      return {
-        ...livro,
-
-        googleId:
-          livro.googleId ?? null,
-
-        capa:
-          livro.capa ?? null,
-
-        lido:
-          livro.lido ?? true,
-
-        planejado:
-          livro.planejado ?? false,
-
-        favorito:
-          livro.favorito ?? false,
-
-        autores:
-          autoresNormalizados,
-      };
-    });
-  } catch (erro) {
-    console.error(
-      "Não foi possível carregar os livros:",
-      erro,
-    );
-
-    return [];
-  }
-}
-
-function salvarLivros() {
-  localStorage.setItem(
-    "livros",
-    JSON.stringify(livros),
-  );
-}
+let livros = [];
 
 /* =========================
    AUTORES NO LOCAL STORAGE
 ========================= */
 
-let autoresFavoritos =
-  carregarAutoresFavoritos();
+let autoresFavoritos = carregarAutoresFavoritos();
 
 function carregarAutoresFavoritos() {
-  const autoresSalvos = localStorage.getItem(
-    "autoresFavoritos",
-  );
+  const autoresSalvos = localStorage.getItem("autoresFavoritos");
 
   if (!autoresSalvos) {
     return [];
   }
 
   try {
-    const autoresCarregados =
-      JSON.parse(autoresSalvos);
+    const autoresCarregados = JSON.parse(autoresSalvos);
 
     if (!Array.isArray(autoresCarregados)) {
       return [];
@@ -326,47 +192,34 @@ function carregarAutoresFavoritos() {
           ? autor.trim()
           : String(autor?.nome ?? "").trim();
 
-      const nomeNormalizado =
-        normalizarTexto(nome);
+      const nomeNormalizado = normalizarTexto(nome);
 
       if (!nome || !nomeNormalizado) {
         return;
       }
 
-      if (
-        !autoresUnicos.has(nomeNormalizado)
-      ) {
-        autoresUnicos.set(
-          nomeNormalizado,
-          {
-            id:
-              typeof autor === "object" &&
-              autor?.id
-                ? autor.id
-                : gerarIdAutor(nome),
+      if (!autoresUnicos.has(nomeNormalizado)) {
+        autoresUnicos.set(nomeNormalizado, {
+          id:
+            typeof autor === "object" && autor?.id
+              ? autor.id
+              : gerarIdAutor(nome),
 
-            nome,
-          },
-        );
+          nome,
+        });
       }
     });
 
     return [...autoresUnicos.values()];
   } catch (erro) {
-    console.error(
-      "Não foi possível carregar os autores favoritos:",
-      erro,
-    );
+    console.error("Não foi possível carregar os autores favoritos:", erro);
 
     return [];
   }
 }
 
 function salvarAutoresFavoritos() {
-  localStorage.setItem(
-    "autoresFavoritos",
-    JSON.stringify(autoresFavoritos),
-  );
+  localStorage.setItem("autoresFavoritos", JSON.stringify(autoresFavoritos));
 }
 
 /* =========================
@@ -374,69 +227,36 @@ function salvarAutoresFavoritos() {
 ========================= */
 
 function ativarAba(tipo) {
-  if (
-    !abaLivros ||
-    !abaAutores ||
-    !painelLivros ||
-    !painelAutores
-  ) {
+  if (!abaLivros || !abaAutores || !painelLivros || !painelAutores) {
     return;
   }
 
-  const mostrarAutores =
-    tipo === "autores";
+  const mostrarAutores = tipo === "autores";
 
-  abaLivros.classList.toggle(
-    "is-active",
-    !mostrarAutores,
-  );
+  abaLivros.classList.toggle("is-active", !mostrarAutores);
 
-  abaAutores.classList.toggle(
-    "is-active",
-    mostrarAutores,
-  );
+  abaAutores.classList.toggle("is-active", mostrarAutores);
 
-  abaLivros.setAttribute(
-    "aria-selected",
-    String(!mostrarAutores),
-  );
+  abaLivros.setAttribute("aria-selected", String(!mostrarAutores));
 
-  abaAutores.setAttribute(
-    "aria-selected",
-    String(mostrarAutores),
-  );
+  abaAutores.setAttribute("aria-selected", String(mostrarAutores));
 
-  abaLivros.tabIndex =
-    mostrarAutores ? -1 : 0;
+  abaLivros.tabIndex = mostrarAutores ? -1 : 0;
 
-  abaAutores.tabIndex =
-    mostrarAutores ? 0 : -1;
+  abaAutores.tabIndex = mostrarAutores ? 0 : -1;
 
   painelLivros.hidden = mostrarAutores;
   painelAutores.hidden = !mostrarAutores;
 
-  painelLivros.setAttribute(
-    "aria-hidden",
-    String(mostrarAutores),
-  );
+  painelLivros.setAttribute("aria-hidden", String(mostrarAutores));
 
-  painelAutores.setAttribute(
-    "aria-hidden",
-    String(!mostrarAutores),
-  );
+  painelAutores.setAttribute("aria-hidden", String(!mostrarAutores));
 
-  const urlAtual = new URL(
-    window.location.href,
-  );
+  const urlAtual = new URL(window.location.href);
 
-  urlAtual.hash =
-    mostrarAutores ? "autores" : "";
+  urlAtual.hash = mostrarAutores ? "autores" : "";
 
-  window.history.replaceState(
-    null,
-    "",
-    urlAtual,
-  );
+  window.history.replaceState(null, "", urlAtual);
 }
 
 if (abaLivros && abaAutores) {
@@ -448,72 +268,43 @@ if (abaLivros && abaAutores) {
     ativarAba("autores");
   });
 
-  const botoesAbas = [
-    abaLivros,
-    abaAutores,
-  ];
+  const botoesAbas = [abaLivros, abaAutores];
 
-  botoesAbas.forEach(
-    (botao, indiceAtual) => {
-      botao.addEventListener(
-        "keydown",
-        (event) => {
-          const teclasPermitidas = [
-            "ArrowLeft",
-            "ArrowRight",
-            "Home",
-            "End",
-          ];
+  botoesAbas.forEach((botao, indiceAtual) => {
+    botao.addEventListener("keydown", (event) => {
+      const teclasPermitidas = ["ArrowLeft", "ArrowRight", "Home", "End"];
 
-          if (
-            !teclasPermitidas.includes(
-              event.key,
-            )
-          ) {
-            return;
-          }
+      if (!teclasPermitidas.includes(event.key)) {
+        return;
+      }
 
-          event.preventDefault();
+      event.preventDefault();
 
-          let novoIndice = indiceAtual;
+      let novoIndice = indiceAtual;
 
-          if (event.key === "ArrowRight") {
-            novoIndice =
-              (indiceAtual + 1) %
-              botoesAbas.length;
-          }
+      if (event.key === "ArrowRight") {
+        novoIndice = (indiceAtual + 1) % botoesAbas.length;
+      }
 
-          if (event.key === "ArrowLeft") {
-            novoIndice =
-              (indiceAtual -
-                1 +
-                botoesAbas.length) %
-              botoesAbas.length;
-          }
+      if (event.key === "ArrowLeft") {
+        novoIndice = (indiceAtual - 1 + botoesAbas.length) % botoesAbas.length;
+      }
 
-          if (event.key === "Home") {
-            novoIndice = 0;
-          }
+      if (event.key === "Home") {
+        novoIndice = 0;
+      }
 
-          if (event.key === "End") {
-            novoIndice =
-              botoesAbas.length - 1;
-          }
+      if (event.key === "End") {
+        novoIndice = botoesAbas.length - 1;
+      }
 
-          const novaAba =
-            novoIndice === 0
-              ? "livros"
-              : "autores";
+      const novaAba = novoIndice === 0 ? "livros" : "autores";
 
-          ativarAba(novaAba);
+      ativarAba(novaAba);
 
-          botoesAbas[
-            novoIndice
-          ].focus();
-        },
-      );
-    },
-  );
+      botoesAbas[novoIndice].focus();
+    });
+  });
 }
 
 /* =========================
@@ -521,19 +312,13 @@ if (abaLivros && abaAutores) {
 ========================= */
 
 function criarPlaceholderCapa() {
-  const placeholder =
-    document.createElement("span");
+  const placeholder = document.createElement("span");
 
-  placeholder.classList.add(
-    "cover-placeholder",
-  );
+  placeholder.classList.add("cover-placeholder");
 
   placeholder.textContent = "📖";
 
-  placeholder.setAttribute(
-    "aria-label",
-    "Livro sem capa disponível",
-  );
+  placeholder.setAttribute("aria-label", "Livro sem capa disponível");
 
   return placeholder;
 }
@@ -543,30 +328,21 @@ function criarPlaceholderCapa() {
 ========================= */
 
 function encontrarAutorFavorito(nome) {
-  const nomeNormalizado =
-    normalizarTexto(nome);
+  const nomeNormalizado = normalizarTexto(nome);
 
   return autoresFavoritos.find(
-    (autor) =>
-      normalizarTexto(autor.nome) ===
-      nomeNormalizado,
+    (autor) => normalizarTexto(autor.nome) === nomeNormalizado,
   );
 }
 
 function autorEstaFavoritado(nome) {
-  return Boolean(
-    encontrarAutorFavorito(nome),
-  );
+  return Boolean(encontrarAutorFavorito(nome));
 }
 
 function adicionarAutorFavorito(nome) {
-  const nomeLimpo =
-    String(nome ?? "").trim();
+  const nomeLimpo = String(nome ?? "").trim();
 
-  if (
-    !nomeLimpo ||
-    autorEstaFavoritado(nomeLimpo)
-  ) {
+  if (!nomeLimpo || autorEstaFavoritado(nomeLimpo)) {
     return;
   }
 
@@ -578,54 +354,32 @@ function adicionarAutorFavorito(nome) {
   salvarAutoresFavoritos();
   renderizarTudo();
 
-  notificar(
-    `"${nomeLimpo}" foi adicionado aos autores favoritos.`,
-  );
+  notificar(`"${nomeLimpo}" foi adicionado aos autores favoritos.`);
 }
 
-function restaurarAutorFavorito(
-  autorRemovido,
-  indiceAnterior,
-) {
-  if (
-    autorEstaFavoritado(
-      autorRemovido.nome,
-    )
-  ) {
+function restaurarAutorFavorito(autorRemovido, indiceAnterior) {
+  if (autorEstaFavoritado(autorRemovido.nome)) {
     return;
   }
 
-  const indiceSeguro = Math.min(
-    indiceAnterior,
-    autoresFavoritos.length,
-  );
+  const indiceSeguro = Math.min(indiceAnterior, autoresFavoritos.length);
 
-  autoresFavoritos.splice(
-    indiceSeguro,
-    0,
-    {
-      ...autorRemovido,
-    },
-  );
+  autoresFavoritos.splice(indiceSeguro, 0, {
+    ...autorRemovido,
+  });
 
   salvarAutoresFavoritos();
   renderizarTudo();
 
-  notificar(
-    `"${autorRemovido.nome}" voltou para os autores favoritos.`,
-  );
+  notificar(`"${autorRemovido.nome}" voltou para os autores favoritos.`);
 }
 
 function removerAutorFavorito(nome) {
-  const nomeNormalizado =
-    normalizarTexto(nome);
+  const nomeNormalizado = normalizarTexto(nome);
 
-  const indiceAutor =
-    autoresFavoritos.findIndex(
-      (autor) =>
-        normalizarTexto(autor.nome) ===
-        nomeNormalizado,
-    );
+  const indiceAutor = autoresFavoritos.findIndex(
+    (autor) => normalizarTexto(autor.nome) === nomeNormalizado,
+  );
 
   if (indiceAutor === -1) {
     return;
@@ -635,10 +389,7 @@ function removerAutorFavorito(nome) {
     ...autoresFavoritos[indiceAutor],
   };
 
-  autoresFavoritos.splice(
-    indiceAutor,
-    1,
-  );
+  autoresFavoritos.splice(indiceAutor, 1);
 
   salvarAutoresFavoritos();
   renderizarTudo();
@@ -651,10 +402,7 @@ function removerAutorFavorito(nome) {
       texto: "Desfazer",
 
       aoClicar: () => {
-        restaurarAutorFavorito(
-          autorRemovido,
-          indiceAutor,
-        );
+        restaurarAutorFavorito(autorRemovido, indiceAutor);
       },
     },
   );
@@ -684,49 +432,32 @@ function criarAreaAutoresLivro(livro) {
 
   area.classList.add("book-authors-area");
 
-  const tituloArea =
-    document.createElement("span");
+  const tituloArea = document.createElement("span");
 
-  tituloArea.classList.add(
-    "book-authors-label",
-  );
+  tituloArea.classList.add("book-authors-label");
 
   tituloArea.textContent = "Autores:";
 
-  const listaBotoes =
-    document.createElement("div");
+  const listaBotoes = document.createElement("div");
 
-  listaBotoes.classList.add(
-    "book-authors-buttons",
-  );
+  listaBotoes.classList.add("book-authors-buttons");
 
   autores.forEach((nomeAutor) => {
-    const botaoAutor =
-      document.createElement("button");
+    const botaoAutor = document.createElement("button");
 
-    const estaFavoritado =
-      autorEstaFavoritado(nomeAutor);
+    const estaFavoritado = autorEstaFavoritado(nomeAutor);
 
     botaoAutor.type = "button";
 
-    botaoAutor.classList.add(
-      "btn-favorite-author",
-    );
+    botaoAutor.classList.add("btn-favorite-author");
 
-    botaoAutor.classList.toggle(
-      "is-favorite",
-      estaFavoritado,
-    );
+    botaoAutor.classList.toggle("is-favorite", estaFavoritado);
 
-    botaoAutor.textContent =
-      estaFavoritado
-        ? `★ ${nomeAutor}`
-        : `☆ ${nomeAutor}`;
+    botaoAutor.textContent = estaFavoritado
+      ? `★ ${nomeAutor}`
+      : `☆ ${nomeAutor}`;
 
-    botaoAutor.setAttribute(
-      "aria-pressed",
-      String(estaFavoritado),
-    );
+    botaoAutor.setAttribute("aria-pressed", String(estaFavoritado));
 
     botaoAutor.setAttribute(
       "aria-label",
@@ -735,24 +466,14 @@ function criarAreaAutoresLivro(livro) {
         : `Adicionar ${nomeAutor} aos autores favoritos`,
     );
 
-    botaoAutor.addEventListener(
-      "click",
-      () => {
-        alternarAutorFavorito(
-          nomeAutor,
-        );
-      },
-    );
+    botaoAutor.addEventListener("click", () => {
+      alternarAutorFavorito(nomeAutor);
+    });
 
-    listaBotoes.appendChild(
-      botaoAutor,
-    );
+    listaBotoes.appendChild(botaoAutor);
   });
 
-  area.append(
-    tituloArea,
-    listaBotoes,
-  );
+  area.append(tituloArea, listaBotoes);
 
   return area;
 }
@@ -761,46 +482,30 @@ function criarAreaAutoresLivro(livro) {
    LIVROS FAVORITOS
 ========================= */
 
-function restaurarNosFavoritos(
-  livroRemovido,
-  indiceAnterior,
-) {
-  const livroExistente = livros.find(
-    (livro) =>
-      livro.id === livroRemovido.id,
-  );
+async function restaurarNosFavoritos(livroRemovido, indiceAnterior) {
+  const livroExistente = livros.find((livro) => livro.id === livroRemovido.id);
 
   if (livroExistente) {
     livroExistente.favorito = true;
   } else {
-    const indiceSeguro = Math.min(
-      indiceAnterior,
-      livros.length,
-    );
+    const indiceSeguro = Math.min(indiceAnterior, livros.length);
 
-    livros.splice(
-      indiceSeguro,
-      0,
-      {
-        ...livroRemovido,
-        favorito: true,
-      },
-    );
+    livros.splice(indiceSeguro, 0, {
+      ...livroRemovido,
+      favorito: true,
+    });
   }
+  const livroRestaurado = livros.find((livro) => livro.id === livroRemovido.id);
 
-  salvarLivros();
+  await atualizarStatusLivro(livroRestaurado);
+
   renderizarTudo();
 
-  notificar(
-    `"${livroRemovido.titulo}" voltou para os favoritos.`,
-  );
+  notificar(`"${livroRemovido.titulo}" voltou para os favoritos.`);
 }
 
-function removerDosFavoritos(id) {
-  const indiceLivro =
-    livros.findIndex(
-      (livro) => livro.id === id,
-    );
+async function removerDosFavoritos(id) {
+  const indiceLivro = livros.findIndex((livro) => livro.id === id);
 
   if (indiceLivro === -1) {
     return;
@@ -809,24 +514,17 @@ function removerDosFavoritos(id) {
   const livroRemovido = {
     ...livros[indiceLivro],
 
-    autores: [
-      ...obterAutoresLivro(
-        livros[indiceLivro],
-      ),
-    ],
+    autores: [...obterAutoresLivro(livros[indiceLivro])],
   };
 
-  livros[indiceLivro].favorito =
-    false;
+  livros[indiceLivro].favorito = false;
 
-  if (
-    !livros[indiceLivro].lido &&
-    !livros[indiceLivro].planejado
-  ) {
+  await atualizarStatusLivro(livros[indiceLivro]);
+
+  if (!livros[indiceLivro].lido && !livros[indiceLivro].planejado) {
     livros.splice(indiceLivro, 1);
   }
 
-  salvarLivros();
   renderizarTudo();
 
   notificar(
@@ -837,19 +535,14 @@ function removerDosFavoritos(id) {
       texto: "Desfazer",
 
       aoClicar: () => {
-        restaurarNosFavoritos(
-          livroRemovido,
-          indiceLivro,
-        );
+        restaurarNosFavoritos(livroRemovido, indiceLivro);
       },
     },
   );
 }
 
-function marcarComoLido(id) {
-  const livro = livros.find(
-    (item) => item.id === id,
-  );
+async function marcarComoLido(id) {
+  const livro = livros.find((item) => item.id === id);
 
   if (!livro || livro.lido) {
     return;
@@ -858,12 +551,10 @@ function marcarComoLido(id) {
   livro.lido = true;
   livro.planejado = false;
 
-  salvarLivros();
+  await atualizarStatusLivro(livro);
   renderizarTudo();
 
-  notificar(
-    `"${livro.titulo}" foi marcado como lido.`,
-  );
+  notificar(`"${livro.titulo}" foi marcado como lido.`);
 }
 
 /* =========================
@@ -871,122 +562,78 @@ function marcarComoLido(id) {
 ========================= */
 
 function criarCartaoFavorito(livro) {
-  const item =
-    document.createElement("li");
+  const item = document.createElement("li");
 
-  item.classList.add(
-    "search-result-card",
-  );
+  item.classList.add("search-result-card");
 
-  const areaCapa =
-    document.createElement("div");
+  const areaCapa = document.createElement("div");
 
-  areaCapa.classList.add(
-    "search-result-cover",
-  );
+  areaCapa.classList.add("search-result-cover");
 
   if (livro.capa) {
-    const imagem =
-      document.createElement("img");
+    const imagem = document.createElement("img");
 
     imagem.src = livro.capa;
-    imagem.alt =
-      `Capa do livro ${livro.titulo}`;
+    imagem.alt = `Capa do livro ${livro.titulo}`;
 
     imagem.loading = "lazy";
 
-    imagem.addEventListener(
-      "error",
-      () => {
-        areaCapa.innerHTML = "";
+    imagem.addEventListener("error", () => {
+      areaCapa.innerHTML = "";
 
-        areaCapa.appendChild(
-          criarPlaceholderCapa(),
-        );
-      },
-    );
+      areaCapa.appendChild(criarPlaceholderCapa());
+    });
 
     areaCapa.appendChild(imagem);
   } else {
-    areaCapa.appendChild(
-      criarPlaceholderCapa(),
-    );
+    areaCapa.appendChild(criarPlaceholderCapa());
   }
 
-  const conteudo =
-    document.createElement("div");
+  const conteudo = document.createElement("div");
 
-  conteudo.classList.add(
-    "search-result-content",
-  );
+  conteudo.classList.add("search-result-content");
 
-  const titulo =
-    document.createElement("h3");
+  const titulo = document.createElement("h3");
 
   titulo.textContent = livro.titulo;
   titulo.title = livro.titulo;
 
-  const autor =
-    document.createElement("p");
+  const autor = document.createElement("p");
 
-  autor.classList.add(
-    "search-result-author",
-  );
+  autor.classList.add("search-result-author");
 
-  autor.textContent =
-    livro.autor ||
-    "Autor não informado";
+  autor.textContent = livro.autor || "Autor não informado";
 
-  const ano =
-    document.createElement("span");
+  const ano = document.createElement("span");
 
-  ano.classList.add(
-    "search-result-year",
-  );
+  ano.classList.add("search-result-year");
 
-  ano.textContent =
-    livro.ano ||
-    "Ano não informado";
+  ano.textContent = livro.ano || "Ano não informado";
 
-  conteudo.append(
-    titulo,
-    autor,
-    ano,
-  );
+  conteudo.append(titulo, autor, ano);
 
-  const areaAutores =
-    criarAreaAutoresLivro(livro);
+  const areaAutores = criarAreaAutoresLivro(livro);
 
   if (areaAutores) {
-    conteudo.appendChild(
-      areaAutores,
-    );
+    conteudo.appendChild(areaAutores);
   }
 
-  const acoes =
-    document.createElement("div");
+  const acoes = document.createElement("div");
 
-  acoes.classList.add(
-    "search-result-actions",
-  );
+  acoes.classList.add("search-result-actions");
 
-  const botaoLido =
-    document.createElement("button");
+  const botaoLido = document.createElement("button");
 
   botaoLido.type = "button";
 
-  botaoLido.classList.add(
-    "btn-favorite-mark-read",
-  );
+  botaoLido.classList.add("btn-favorite-mark-read");
 
   if (livro.lido) {
-    botaoLido.textContent =
-      "Já está nos lidos";
+    botaoLido.textContent = "Já está nos lidos";
 
     botaoLido.disabled = true;
   } else {
-    botaoLido.textContent =
-      "Marcar como lido";
+    botaoLido.textContent = "Marcar como lido";
   }
 
   botaoLido.setAttribute(
@@ -996,50 +643,32 @@ function criarCartaoFavorito(livro) {
       : `Marcar ${livro.titulo} como lido`,
   );
 
-  botaoLido.addEventListener(
-    "click",
-    () => {
-      marcarComoLido(livro.id);
-    },
-  );
+  botaoLido.addEventListener("click", () => {
+    marcarComoLido(livro.id);
+  });
 
-  const botaoRemover =
-    document.createElement("button");
+  const botaoRemover = document.createElement("button");
 
   botaoRemover.type = "button";
 
-  botaoRemover.classList.add(
-    "btn-remove-favorite",
-  );
+  botaoRemover.classList.add("btn-remove-favorite");
 
-  botaoRemover.textContent =
-    "Remover favorito";
+  botaoRemover.textContent = "Remover favorito";
 
   botaoRemover.setAttribute(
     "aria-label",
     `Remover ${livro.titulo} dos favoritos`,
   );
 
-  botaoRemover.addEventListener(
-    "click",
-    () => {
-      removerDosFavoritos(
-        livro.id,
-      );
-    },
-  );
+  botaoRemover.addEventListener("click", () => {
+    removerDosFavoritos(livro.id);
+  });
 
-  acoes.append(
-    botaoLido,
-    botaoRemover,
-  );
+  acoes.append(botaoLido, botaoRemover);
 
   conteudo.appendChild(acoes);
 
-  item.append(
-    areaCapa,
-    conteudo,
-  );
+  item.append(areaCapa, conteudo);
 
   return item;
 }
@@ -1049,18 +678,12 @@ function criarCartaoFavorito(livro) {
 ========================= */
 
 function contarLivrosDoAutor(nomeAutor) {
-  const autorNormalizado =
-    normalizarTexto(nomeAutor);
+  const autorNormalizado = normalizarTexto(nomeAutor);
 
   return livros.filter((livro) => {
-    const autores =
-      obterAutoresLivro(livro);
+    const autores = obterAutoresLivro(livro);
 
-    return autores.some(
-      (autor) =>
-        normalizarTexto(autor) ===
-        autorNormalizado,
-    );
+    return autores.some((autor) => normalizarTexto(autor) === autorNormalizado);
   }).length;
 }
 
@@ -1069,138 +692,85 @@ function contarLivrosDoAutor(nomeAutor) {
 ========================= */
 
 function criarCartaoAutor(autor) {
-  const item =
-    document.createElement("li");
+  const item = document.createElement("li");
 
-  item.classList.add(
-    "author-favorite-card",
-  );
+  item.classList.add("author-favorite-card");
 
-  const icone =
-    document.createElement("div");
+  const icone = document.createElement("div");
 
-  icone.classList.add(
-    "author-favorite-icon",
-  );
+  icone.classList.add("author-favorite-icon");
 
   icone.textContent = "✍️";
-  icone.setAttribute(
-    "aria-hidden",
-    "true",
-  );
+  icone.setAttribute("aria-hidden", "true");
 
-  const conteudo =
-    document.createElement("div");
+  const conteudo = document.createElement("div");
 
-  conteudo.classList.add(
-    "author-favorite-content",
-  );
+  conteudo.classList.add("author-favorite-content");
 
-  const nome =
-    document.createElement("h3");
+  const nome = document.createElement("h3");
 
   nome.textContent = autor.nome;
 
-  const classificacao =
-    document.createElement("span");
+  const classificacao = document.createElement("span");
 
-  classificacao.classList.add(
-    "author-favorite-label",
-  );
+  classificacao.classList.add("author-favorite-label");
 
-  classificacao.textContent =
-    "Autor favorito";
+  classificacao.textContent = "Autor favorito";
 
-  const quantidadeLivros =
-    contarLivrosDoAutor(autor.nome);
+  const quantidadeLivros = contarLivrosDoAutor(autor.nome);
 
-  const resumo =
-    document.createElement("p");
+  const resumo = document.createElement("p");
 
   if (quantidadeLivros === 0) {
     resumo.textContent =
       "Nenhum livro deste autor está salvo na sua biblioteca.";
   } else if (quantidadeLivros === 1) {
-    resumo.textContent =
-      "1 livro deste autor está salvo na sua biblioteca.";
+    resumo.textContent = "1 livro deste autor está salvo na sua biblioteca.";
   } else {
-    resumo.textContent =
-      `${quantidadeLivros} livros deste autor estão salvos na sua biblioteca.`;
+    resumo.textContent = `${quantidadeLivros} livros deste autor estão salvos na sua biblioteca.`;
   }
 
-  const acoes =
-    document.createElement("div");
+  const acoes = document.createElement("div");
 
-  acoes.classList.add(
-    "author-favorite-actions",
-  );
+  acoes.classList.add("author-favorite-actions");
 
-  const linkPesquisar =
-    document.createElement("a");
+  const linkPesquisar = document.createElement("a");
 
-  const parametros =
-    new URLSearchParams({
-      tipo: "autor",
-      busca: autor.nome,
-    });
+  const parametros = new URLSearchParams({
+    tipo: "autor",
+    busca: autor.nome,
+  });
 
-  linkPesquisar.href =
-    `./index.html?${parametros.toString()}`;
+  linkPesquisar.href = `./index.html?${parametros.toString()}`;
 
-  linkPesquisar.classList.add(
-    "btn-search-author",
-  );
+  linkPesquisar.classList.add("btn-search-author");
 
-  linkPesquisar.textContent =
-    "Pesquisar obras";
+  linkPesquisar.textContent = "Pesquisar obras";
 
-  linkPesquisar.setAttribute(
-    "aria-label",
-    `Pesquisar obras de ${autor.nome}`,
-  );
+  linkPesquisar.setAttribute("aria-label", `Pesquisar obras de ${autor.nome}`);
 
-  const botaoRemover =
-    document.createElement("button");
+  const botaoRemover = document.createElement("button");
 
   botaoRemover.type = "button";
 
-  botaoRemover.classList.add(
-    "btn-remove-author",
-  );
+  botaoRemover.classList.add("btn-remove-author");
 
-  botaoRemover.textContent =
-    "Remover favorito";
+  botaoRemover.textContent = "Remover favorito";
 
   botaoRemover.setAttribute(
     "aria-label",
     `Remover ${autor.nome} dos autores favoritos`,
   );
 
-  botaoRemover.addEventListener(
-    "click",
-    () => {
-      removerAutorFavorito(
-        autor.nome,
-      );
-    },
-  );
+  botaoRemover.addEventListener("click", () => {
+    removerAutorFavorito(autor.nome);
+  });
 
-  acoes.append(
-    linkPesquisar,
-    botaoRemover,
-  );
+  acoes.append(linkPesquisar, botaoRemover);
 
-  conteudo.append(
-    nome,
-    classificacao,
-    resumo,
-    acoes,
-  );
+  conteudo.append(nome, classificacao, resumo, acoes);
 
-  item.append(
-    icone,
-    conteudo,
-  );
+  item.append(icone, conteudo);
 
   return item;
 }
@@ -1210,44 +780,28 @@ function criarCartaoAutor(autor) {
 ========================= */
 
 function renderizarFavoritos() {
-  if (
-    !listaFavoritos ||
-    !estadoVazioFavoritos ||
-    !statusFavoritos
-  ) {
+  if (!listaFavoritos || !estadoVazioFavoritos || !statusFavoritos) {
     return;
   }
 
   listaFavoritos.innerHTML = "";
 
-  const livrosFavoritos =
-    livros.filter(
-      (livro) =>
-        livro.favorito === true,
-    );
+  const livrosFavoritos = livros.filter((livro) => livro.favorito === true);
 
-  livrosFavoritos.forEach(
-    (livro) => {
-      listaFavoritos.appendChild(
-        criarCartaoFavorito(livro),
-      );
-    },
-  );
+  livrosFavoritos.forEach((livro) => {
+    listaFavoritos.appendChild(criarCartaoFavorito(livro));
+  });
 
-  const listaEstaVazia =
-    livrosFavoritos.length === 0;
+  const listaEstaVazia = livrosFavoritos.length === 0;
 
-  estadoVazioFavoritos.hidden =
-    !listaEstaVazia;
+  estadoVazioFavoritos.hidden = !listaEstaVazia;
 
   if (contadorAbaLivros) {
-    contadorAbaLivros.textContent =
-      String(livrosFavoritos.length);
+    contadorAbaLivros.textContent = String(livrosFavoritos.length);
   }
 
   if (listaEstaVazia) {
-    statusFavoritos.textContent =
-      "Sua lista de livros favoritos está vazia.";
+    statusFavoritos.textContent = "Sua lista de livros favoritos está vazia.";
 
     return;
   }
@@ -1273,23 +827,16 @@ function renderizarAutoresFavoritos() {
 
   listaAutoresFavoritos.innerHTML = "";
 
-  autoresFavoritos.forEach(
-    (autor) => {
-      listaAutoresFavoritos.appendChild(
-        criarCartaoAutor(autor),
-      );
-    },
-  );
+  autoresFavoritos.forEach((autor) => {
+    listaAutoresFavoritos.appendChild(criarCartaoAutor(autor));
+  });
 
-  const listaEstaVazia =
-    autoresFavoritos.length === 0;
+  const listaEstaVazia = autoresFavoritos.length === 0;
 
-  estadoVazioAutores.hidden =
-    !listaEstaVazia;
+  estadoVazioAutores.hidden = !listaEstaVazia;
 
   if (contadorAbaAutores) {
-    contadorAbaAutores.textContent =
-      String(autoresFavoritos.length);
+    contadorAbaAutores.textContent = String(autoresFavoritos.length);
   }
 
   if (listaEstaVazia) {
@@ -1318,11 +865,15 @@ function renderizarTudo() {
    INICIALIZAÇÃO
 ========================= */
 
-renderizarTudo();
-
-const abaInicial =
-  window.location.hash === "#autores"
-    ? "autores"
-    : "livros";
+const abaInicial = window.location.hash === "#autores" ? "autores" : "livros";
 
 ativarAba(abaInicial);
+
+async function iniciarPaginaFavoritos() {
+  livros = await carregarLivrosDoBanco();
+  renderizarTudo();
+  const abaInicial = window.location.hash === "#autores" ? "autores" : "livros";
+  ativarAba(abaInicial);
+}
+
+iniciarPaginaFavoritos();

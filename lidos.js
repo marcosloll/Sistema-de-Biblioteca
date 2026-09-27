@@ -5,9 +5,7 @@
 const menuButton = document.querySelector(".menu-toggle");
 const navLinks = document.querySelector(".nav-links");
 
-const linksDoMenu = document.querySelectorAll(
-  ".nav-links a",
-);
+const linksDoMenu = document.querySelectorAll(".nav-links a");
 
 function fecharMenu() {
   if (!menuButton || !navLinks) {
@@ -19,42 +17,24 @@ function fecharMenu() {
 
   document.body.classList.remove("menu-open");
 
-  menuButton.setAttribute(
-    "aria-expanded",
-    "false",
-  );
+  menuButton.setAttribute("aria-expanded", "false");
 
-  menuButton.setAttribute(
-    "aria-label",
-    "Abrir menu",
-  );
+  menuButton.setAttribute("aria-label", "Abrir menu");
 }
 
 if (menuButton && navLinks) {
   menuButton.addEventListener("click", () => {
-    const menuEstaAberto =
-      navLinks.classList.toggle("is-open");
+    const menuEstaAberto = navLinks.classList.toggle("is-open");
 
-    menuButton.classList.toggle(
-      "is-open",
-      menuEstaAberto,
-    );
+    menuButton.classList.toggle("is-open", menuEstaAberto);
 
-    document.body.classList.toggle(
-      "menu-open",
-      menuEstaAberto,
-    );
+    document.body.classList.toggle("menu-open", menuEstaAberto);
 
-    menuButton.setAttribute(
-      "aria-expanded",
-      String(menuEstaAberto),
-    );
+    menuButton.setAttribute("aria-expanded", String(menuEstaAberto));
 
     menuButton.setAttribute(
       "aria-label",
-      menuEstaAberto
-        ? "Fechar menu"
-        : "Abrir menu",
+      menuEstaAberto ? "Fechar menu" : "Abrir menu",
     );
   });
 }
@@ -73,22 +53,9 @@ document.addEventListener("keydown", (event) => {
    NOTIFICAÇÕES
 ========================= */
 
-function notificar(
-  mensagem,
-  tipo = "sucesso",
-  duracao = 3500,
-  acao = null,
-) {
-  if (
-    typeof window.mostrarNotificacao ===
-    "function"
-  ) {
-    window.mostrarNotificacao(
-      mensagem,
-      tipo,
-      duracao,
-      acao,
-    );
+function notificar(mensagem, tipo = "sucesso", duracao = 3500, acao = null) {
+  if (typeof window.mostrarNotificacao === "function") {
+    window.mostrarNotificacao(mensagem, tipo, duracao, acao);
   }
 }
 
@@ -96,30 +63,19 @@ function notificar(
    ELEMENTOS
 ========================= */
 
-const listaLidos = document.querySelector(
-  "#lista-lidos",
+const listaLidos = document.querySelector("#lista-lidos");
+
+const estadoVazioLidos = document.querySelector("#estado-vazio-lidos");
+
+const estadoSemResultadosLidos = document.querySelector(
+  "#estado-sem-resultados-lidos",
 );
 
-const estadoVazioLidos = document.querySelector(
-  "#estado-vazio-lidos",
-);
+const statusLidos = document.querySelector("#status-lidos");
 
-const estadoSemResultadosLidos =
-  document.querySelector(
-    "#estado-sem-resultados-lidos",
-  );
+const filtroLidos = document.querySelector("#filtro-lidos");
 
-const statusLidos = document.querySelector(
-  "#status-lidos",
-);
-
-const filtroLidos = document.querySelector(
-  "#filtro-lidos",
-);
-
-const ordenacaoLidos = document.querySelector(
-  "#ordenacao-lidos",
-);
+const ordenacaoLidos = document.querySelector("#ordenacao-lidos");
 
 /* =========================
    FUNÇÕES AUXILIARES
@@ -134,9 +90,7 @@ function normalizarTexto(texto) {
 }
 
 function obterAnoNumerico(livro) {
-  const anoEncontrado = String(
-    livro.ano ?? "",
-  ).match(/\d{4}/);
+  const anoEncontrado = String(livro.ano ?? "").match(/\d{4}/);
 
   if (!anoEncontrado) {
     return null;
@@ -146,124 +100,47 @@ function obterAnoNumerico(livro) {
 }
 
 function compararTextos(textoA, textoB) {
-  return String(textoA ?? "").localeCompare(
-    String(textoB ?? ""),
-    "pt-BR",
-    {
-      sensitivity: "base",
-    },
-  );
+  return String(textoA ?? "").localeCompare(String(textoB ?? ""), "pt-BR", {
+    sensitivity: "base",
+  });
 }
 
 /* =========================
-   ARMAZENAMENTO
+   ESTADO DA PÁGINA
 ========================= */
 
-let livros = carregarLivros();
-
-function carregarLivros() {
-  const livrosSalvos =
-    localStorage.getItem("livros");
-
-  if (!livrosSalvos) {
-    return [];
-  }
-
-  try {
-    const livrosCarregados =
-      JSON.parse(livrosSalvos);
-
-    if (!Array.isArray(livrosCarregados)) {
-      return [];
-    }
-
-    return livrosCarregados.map((livro) => ({
-      ...livro,
-
-      googleId:
-        livro.googleId ?? null,
-
-      capa:
-        livro.capa ?? null,
-
-      lido:
-        livro.lido ?? true,
-
-      planejado:
-        livro.planejado ?? false,
-
-      favorito:
-        livro.favorito ?? false,
-
-      autores:
-        Array.isArray(livro.autores)
-          ? livro.autores
-          : livro.autor
-            ? [livro.autor]
-            : [],
-    }));
-  } catch (erro) {
-    console.error(
-      "Não foi possível carregar os livros:",
-      erro,
-    );
-
-    return [];
-  }
-}
-
-function salvarLivros() {
-  localStorage.setItem(
-    "livros",
-    JSON.stringify(livros),
-  );
-}
+let livros = [];
 
 /* =========================
    FILTRO E ORDENAÇÃO
 ========================= */
 
 function obterLivrosLidosFiltrados() {
-  const livrosLidos = livros.filter(
-    (livro) => livro.lido === true,
-  );
+  const livrosLidos = livros.filter((livro) => livro.lido === true);
 
-  const termo = normalizarTexto(
-    filtroLidos?.value,
-  );
+  const termo = normalizarTexto(filtroLidos?.value);
 
   if (!termo) {
     return livrosLidos;
   }
 
   return livrosLidos.filter((livro) => {
-    const titulo = normalizarTexto(
-      livro.titulo,
-    );
+    const titulo = normalizarTexto(livro.titulo);
 
-    const autor = normalizarTexto(
-      livro.autor,
-    );
+    const autor = normalizarTexto(livro.autor);
 
-    const ano = normalizarTexto(
-      livro.ano,
-    );
+    const ano = normalizarTexto(livro.ano);
 
     return (
-      titulo.includes(termo) ||
-      autor.includes(termo) ||
-      ano.includes(termo)
+      titulo.includes(termo) || autor.includes(termo) || ano.includes(termo)
     );
   });
 }
 
 function ordenarLivrosLidos(livrosFiltrados) {
-  const livrosOrdenados = [
-    ...livrosFiltrados,
-  ];
+  const livrosOrdenados = [...livrosFiltrados];
 
-  const tipoOrdenacao =
-    ordenacaoLidos?.value ?? "recentes";
+  const tipoOrdenacao = ordenacaoLidos?.value ?? "recentes";
 
   const indiceOriginal = new Map();
 
@@ -287,47 +164,29 @@ function ordenarLivrosLidos(livrosFiltrados) {
     }
 
     if (tipoOrdenacao === "titulo-az") {
-      return compararTextos(
-        livroA.titulo,
-        livroB.titulo,
-      );
+      return compararTextos(livroA.titulo, livroB.titulo);
     }
 
     if (tipoOrdenacao === "titulo-za") {
-      return compararTextos(
-        livroB.titulo,
-        livroA.titulo,
-      );
+      return compararTextos(livroB.titulo, livroA.titulo);
     }
 
     if (tipoOrdenacao === "autor-az") {
-      const comparacaoAutor = compararTextos(
-        livroA.autor,
-        livroB.autor,
-      );
+      const comparacaoAutor = compararTextos(livroA.autor, livroB.autor);
 
       if (comparacaoAutor !== 0) {
         return comparacaoAutor;
       }
 
-      return compararTextos(
-        livroA.titulo,
-        livroB.titulo,
-      );
+      return compararTextos(livroA.titulo, livroB.titulo);
     }
 
-    if (
-      tipoOrdenacao === "ano-recente" ||
-      tipoOrdenacao === "ano-antigo"
-    ) {
+    if (tipoOrdenacao === "ano-recente" || tipoOrdenacao === "ano-antigo") {
       const anoA = obterAnoNumerico(livroA);
       const anoB = obterAnoNumerico(livroB);
 
       if (anoA === null && anoB === null) {
-        return compararTextos(
-          livroA.titulo,
-          livroB.titulo,
-        );
+        return compararTextos(livroA.titulo, livroB.titulo);
       }
 
       if (anoA === null) {
@@ -356,19 +215,13 @@ function ordenarLivrosLidos(livrosFiltrados) {
 ========================= */
 
 function criarPlaceholderCapa() {
-  const placeholder =
-    document.createElement("span");
+  const placeholder = document.createElement("span");
 
-  placeholder.classList.add(
-    "cover-placeholder",
-  );
+  placeholder.classList.add("cover-placeholder");
 
   placeholder.textContent = "📖";
 
-  placeholder.setAttribute(
-    "aria-label",
-    "Livro sem capa disponível",
-  );
+  placeholder.setAttribute("aria-label", "Livro sem capa disponível");
 
   return placeholder;
 }
@@ -377,10 +230,8 @@ function criarPlaceholderCapa() {
    FAVORITOS
 ========================= */
 
-function alternarFavorito(id) {
-  const livro = livros.find(
-    (item) => item.id === id,
-  );
+async function alternarFavorito(id) {
+  const livro = livros.find((item) => item.id === id);
 
   if (!livro) {
     return;
@@ -388,16 +239,14 @@ function alternarFavorito(id) {
 
   livro.favorito = !livro.favorito;
 
-  salvarLivros();
+  await atualizarStatusLivro(livro);
   renderizarLidos();
 
   notificar(
     livro.favorito
       ? `"${livro.titulo}" foi adicionado aos favoritos.`
       : `"${livro.titulo}" foi removido dos favoritos.`,
-    livro.favorito
-      ? "sucesso"
-      : "aviso",
+    livro.favorito ? "sucesso" : "aviso",
   );
 }
 
@@ -405,46 +254,28 @@ function alternarFavorito(id) {
    REMOVER COM DESFAZER
 ========================= */
 
-function restaurarNosLidos(
-  livroRemovido,
-  indiceAnterior,
-) {
-  const livroExistente = livros.find(
-    (livro) =>
-      livro.id === livroRemovido.id,
-  );
+async function restaurarNosLidos(livroRemovido, indiceAnterior) {
+  const livroExistente = livros.find((livro) => livro.id === livroRemovido.id);
 
   if (livroExistente) {
     livroExistente.lido = true;
   } else {
-    const indiceSeguro = Math.min(
-      indiceAnterior,
-      livros.length,
-    );
+    const indiceSeguro = Math.min(indiceAnterior, livros.length);
 
-    livros.splice(
-      indiceSeguro,
-      0,
-      {
-        ...livroRemovido,
-        lido: true,
-      },
-    );
+    livros.splice(indiceSeguro, 0, {
+      ...livroRemovido,
+      lido: true,
+    });
   }
-
-  salvarLivros();
+  const livroRestaurado = livros.find((livro) => livro.id === livroRemovido.id);
+  await atualizarStatusLivro(livroRestaurado);
   renderizarLidos();
 
-  notificar(
-    `"${livroRemovido.titulo}" voltou para os livros lidos.`,
-  );
+  notificar(`"${livroRemovido.titulo}" voltou para os livros lidos.`);
 }
 
-function removerDosLidos(id) {
-  const indiceLivro =
-    livros.findIndex(
-      (item) => item.id === id,
-    );
+async function removerDosLidos(id) {
+  const indiceLivro = livros.findIndex((item) => item.id === id);
 
   if (indiceLivro === -1) {
     return;
@@ -456,14 +287,12 @@ function removerDosLidos(id) {
 
   livros[indiceLivro].lido = false;
 
-  if (
-    !livros[indiceLivro].planejado &&
-    !livros[indiceLivro].favorito
-  ) {
+  await atualizarStatusLivro(livros[indiceLivro]);
+
+  if (!livros[indiceLivro].planejado && !livros[indiceLivro].favorito) {
     livros.splice(indiceLivro, 1);
   }
 
-  salvarLivros();
   renderizarLidos();
 
   notificar(
@@ -474,10 +303,7 @@ function removerDosLidos(id) {
       texto: "Desfazer",
 
       aoClicar: () => {
-        restaurarNosLidos(
-          livroRemovido,
-          indiceLivro,
-        );
+        restaurarNosLidos(livroRemovido, indiceLivro);
       },
     },
   );
@@ -488,114 +314,70 @@ function removerDosLidos(id) {
 ========================= */
 
 function criarCartaoLido(livro) {
-  const item =
-    document.createElement("li");
+  const item = document.createElement("li");
 
-  item.classList.add(
-    "search-result-card",
-  );
+  item.classList.add("search-result-card");
 
-  const areaCapa =
-    document.createElement("div");
+  const areaCapa = document.createElement("div");
 
-  areaCapa.classList.add(
-    "search-result-cover",
-  );
+  areaCapa.classList.add("search-result-cover");
 
   if (livro.capa) {
-    const imagem =
-      document.createElement("img");
+    const imagem = document.createElement("img");
 
     imagem.src = livro.capa;
 
-    imagem.alt =
-      `Capa do livro ${livro.titulo}`;
+    imagem.alt = `Capa do livro ${livro.titulo}`;
 
     imagem.loading = "lazy";
 
-    imagem.addEventListener(
-      "error",
-      () => {
-        areaCapa.innerHTML = "";
+    imagem.addEventListener("error", () => {
+      areaCapa.innerHTML = "";
 
-        areaCapa.appendChild(
-          criarPlaceholderCapa(),
-        );
-      },
-    );
+      areaCapa.appendChild(criarPlaceholderCapa());
+    });
 
     areaCapa.appendChild(imagem);
   } else {
-    areaCapa.appendChild(
-      criarPlaceholderCapa(),
-    );
+    areaCapa.appendChild(criarPlaceholderCapa());
   }
 
-  const conteudo =
-    document.createElement("div");
+  const conteudo = document.createElement("div");
 
-  conteudo.classList.add(
-    "search-result-content",
-  );
+  conteudo.classList.add("search-result-content");
 
-  const titulo =
-    document.createElement("h3");
+  const titulo = document.createElement("h3");
 
   titulo.textContent = livro.titulo;
   titulo.title = livro.titulo;
 
-  const autor =
-    document.createElement("p");
+  const autor = document.createElement("p");
 
-  autor.classList.add(
-    "search-result-author",
-  );
+  autor.classList.add("search-result-author");
 
-  autor.textContent =
-    livro.autor ||
-    "Autor não informado";
+  autor.textContent = livro.autor || "Autor não informado";
 
-  const ano =
-    document.createElement("span");
+  const ano = document.createElement("span");
 
-  ano.classList.add(
-    "search-result-year",
-  );
+  ano.classList.add("search-result-year");
 
-  ano.textContent =
-    livro.ano ||
-    "Ano não informado";
+  ano.textContent = livro.ano || "Ano não informado";
 
-  const acoes =
-    document.createElement("div");
+  const acoes = document.createElement("div");
 
-  acoes.classList.add(
-    "search-result-actions",
-  );
+  acoes.classList.add("search-result-actions");
 
-  const botaoFavorito =
-    document.createElement("button");
+  const botaoFavorito = document.createElement("button");
 
   botaoFavorito.type = "button";
 
-  botaoFavorito.classList.add(
-    "btn-favorite-read",
-  );
+  botaoFavorito.classList.add("btn-favorite-read");
 
-  botaoFavorito.classList.toggle(
-    "is-favorite",
-    livro.favorito,
-  );
+  botaoFavorito.classList.toggle("is-favorite", livro.favorito);
 
-  botaoFavorito.textContent =
-    livro.favorito
-      ? "★ Favoritado"
-      : "☆ Favoritar";
+  botaoFavorito.textContent = livro.favorito ? "★ Favoritado" : "☆ Favoritar";
 
-  botaoFavorito.setAttribute(
-    "aria-pressed",
-    String(livro.favorito),
-  );
+  botaoFavorito.setAttribute("aria-pressed", String(livro.favorito));
 
   botaoFavorito.setAttribute(
     "aria-label",
@@ -604,53 +386,32 @@ function criarCartaoLido(livro) {
       : `Adicionar ${livro.titulo} aos favoritos`,
   );
 
-  botaoFavorito.addEventListener(
-    "click",
-    () => {
-      alternarFavorito(livro.id);
-    },
-  );
+  botaoFavorito.addEventListener("click", () => {
+    alternarFavorito(livro.id);
+  });
 
-  const botaoRemover =
-    document.createElement("button");
+  const botaoRemover = document.createElement("button");
 
   botaoRemover.type = "button";
 
-  botaoRemover.classList.add(
-    "btn-remove-read",
-  );
+  botaoRemover.classList.add("btn-remove-read");
 
-  botaoRemover.textContent =
-    "Remover dos lidos";
+  botaoRemover.textContent = "Remover dos lidos";
 
   botaoRemover.setAttribute(
     "aria-label",
     `Remover ${livro.titulo} dos livros lidos`,
   );
 
-  botaoRemover.addEventListener(
-    "click",
-    () => {
-      removerDosLidos(livro.id);
-    },
-  );
+  botaoRemover.addEventListener("click", () => {
+    removerDosLidos(livro.id);
+  });
 
-  acoes.append(
-    botaoFavorito,
-    botaoRemover,
-  );
+  acoes.append(botaoFavorito, botaoRemover);
 
-  conteudo.append(
-    titulo,
-    autor,
-    ano,
-    acoes,
-  );
+  conteudo.append(titulo, autor, ano, acoes);
 
-  item.append(
-    areaCapa,
-    conteudo,
-  );
+  item.append(areaCapa, conteudo);
 
   return item;
 }
@@ -671,54 +432,38 @@ function renderizarLidos() {
 
   listaLidos.innerHTML = "";
 
-  const todosLivrosLidos = livros.filter(
-    (livro) => livro.lido === true,
-  );
+  const todosLivrosLidos = livros.filter((livro) => livro.lido === true);
 
-  const livrosFiltrados =
-    obterLivrosLidosFiltrados();
+  const livrosFiltrados = obterLivrosLidosFiltrados();
 
-  const livrosOrdenados =
-    ordenarLivrosLidos(livrosFiltrados);
+  const livrosOrdenados = ordenarLivrosLidos(livrosFiltrados);
 
   livrosOrdenados.forEach((livro) => {
-    listaLidos.appendChild(
-      criarCartaoLido(livro),
-    );
+    listaLidos.appendChild(criarCartaoLido(livro));
   });
 
-  const totalLivros =
-    todosLivrosLidos.length;
+  const totalLivros = todosLivrosLidos.length;
 
-  const quantidadeExibida =
-    livrosOrdenados.length;
+  const quantidadeExibida = livrosOrdenados.length;
 
-  const termoPesquisa =
-    filtroLidos?.value.trim() ?? "";
+  const termoPesquisa = filtroLidos?.value.trim() ?? "";
 
-  const naoTemLivros =
-    totalLivros === 0;
+  const naoTemLivros = totalLivros === 0;
 
-  const filtroSemResultados =
-    totalLivros > 0 &&
-    quantidadeExibida === 0;
+  const filtroSemResultados = totalLivros > 0 && quantidadeExibida === 0;
 
-  estadoVazioLidos.hidden =
-    !naoTemLivros;
+  estadoVazioLidos.hidden = !naoTemLivros;
 
-  estadoSemResultadosLidos.hidden =
-    !filtroSemResultados;
+  estadoSemResultadosLidos.hidden = !filtroSemResultados;
 
   if (naoTemLivros) {
-    statusLidos.textContent =
-      "Seu histórico de leitura está vazio.";
+    statusLidos.textContent = "Seu histórico de leitura está vazio.";
 
     return;
   }
 
   if (filtroSemResultados) {
-    statusLidos.textContent =
-      `Nenhum livro foi encontrado para “${termoPesquisa}”.`;
+    statusLidos.textContent = `Nenhum livro foi encontrado para “${termoPesquisa}”.`;
 
     return;
   }
@@ -743,26 +488,22 @@ function renderizarLidos() {
 ========================= */
 
 if (filtroLidos) {
-  filtroLidos.addEventListener(
-    "input",
-    renderizarLidos,
-  );
+  filtroLidos.addEventListener("input", renderizarLidos);
 
-  filtroLidos.addEventListener(
-    "search",
-    renderizarLidos,
-  );
+  filtroLidos.addEventListener("search", renderizarLidos);
 }
 
 if (ordenacaoLidos) {
-  ordenacaoLidos.addEventListener(
-    "change",
-    renderizarLidos,
-  );
+  ordenacaoLidos.addEventListener("change", renderizarLidos);
 }
 
 /* =========================
    INICIALIZAÇÃO
 ========================= */
 
-renderizarLidos();
+async function iniciarPaginaLidos() {
+  livros = await carregarLivrosDoBanco();
+  renderizarLidos();
+}
+
+iniciarPaginaLidos();
