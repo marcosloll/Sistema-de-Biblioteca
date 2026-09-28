@@ -1,24 +1,38 @@
-const express = require("express");
-const cors = require("cors");
-const { DatabaseSync } = require("node:sqlite");
-const path = require("node:path");
+import express from "express";
+import cors from "cors";
+import "dotenv/config";
+import { connect } from "@tursodatabase/serverless";
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
-const databasePath = path.join(__dirname, "biblioteca.db");
-const db = new DatabaseSync(databasePath);
-
+const db = connect({
+  url: process.env.TURSO_DATABASE_URL,
+  authToken: process.env.TURSO_AUTH_TOKEN,
+});
+const createBooksTable = await db.prepare(`CREATE TABLE IF NOT EXISTS Books (
+    id integer primary key,
+    title varchar (300),
+    author varchar (150),
+    year int,
+    cover varchar (1000),
+    read boolean,
+    favorite boolean,
+    want_to_read boolean,
+    google_books_id text,
+    info_link text
+);`);
+await createBooksTable.run();
 app.use(cors());
 app.use(express.json());
-app.use(express.static(__dirname));
 
-app.get("/books", (req, res) => {
-  const books = db.prepare("SELECT * FROM Books").all();
+app.get("/books", async (req, res) => {
+  const stmt = await db.prepare("SELECT * FROM Books");
+  const books = await stmt.all();
   res.json(books);
 });
 
-app.post("/books", (req, res) => {
+app.post("/books", async (req, res) => {
   const {
     title,
     author,
@@ -30,12 +44,13 @@ app.post("/books", (req, res) => {
     google_books_id,
     info_link,
   } = req.body;
-  const insertBook = db.prepare(`
-        INSERT INTO Books (title, author, year, cover, read, favorite, want_to_read, google_books_id, info_link)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `);
 
-  const result = insertBook.run(
+  const insertBook = await db.prepare(`
+    INSERT INTO Books (title, author, year, cover, read, favorite, want_to_read, google_books_id, info_link) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `);
+
+  const result = await insertBook.run([
     title,
     author,
     year,
@@ -45,59 +60,45 @@ app.post("/books", (req, res) => {
     want_to_read,
     google_books_id,
     info_link,
-  );
+  ]);
 
   res.status(201).json({
     message: "Livro cadastrado com sucesso",
-    id: result.lastInsertRowid,
+    id: Number(result.lastInsertRowid),
   });
 });
 
-app.patch("/books/:id", (req, res) => {
+app.patch("/books/:id", async (req, res) => {
   const id = req.params.id;
   const { read, favorite, want_to_read } = req.body;
-  const updateBook = db.prepare(
+  const updateBook = await db.prepare(
     "UPDATE Books SET read = ?, favorite = ?, want_to_read = ? WHERE id = ? ",
   );
-  const result = updateBook.run(read, favorite, want_to_read, id);
-  res.json({
-    message: "Livro atualizado",
-    changes: result.changes,
-  });
+  const result = await updateBook.run([read, favorite, want_to_read, id]);
+  res.json({ message: "Livro atualizado", changes: result.changes });
 });
 
-app.put("/books/:id", (req, res) => {
+app.put("/books/:id", async (req, res) => {
   const { id } = req.params;
-
   const { title, author, year } = req.body;
-
   const sql = `
-        UPDATE Books 
-        SET title = ?, author = ?, year = ? 
-        WHERE id = ?
-    `;
-  const updateBook = db.prepare(sql);
-
-  const result = updateBook.run(title, author, year, id);
-
+    UPDATE Books SET title = ?, author = ?, year = ? WHERE id = ?
+  `;
+  const updateBook = await db.prepare(sql);
+  const result = await updateBook.run([title, author, year, id]);
   res.json({
     message: "Livro atualizado com sucesso",
     changes: result.changes,
   });
 });
 
-app.delete("/books/:id", (req, res) => {
+app.delete("/books/:id", async (req, res) => {
   const { id } = req.params;
-
-  const deleteBook = db.prepare("DELETE FROM books WHERE id = ?");
-  const result = deleteBook.run(id);
-
-  res.json({
-    message: "Livro excluído com sucesso.",
-    changes: result.changes,
-  });
+  const deleteBook = await db.prepare("DELETE FROM books WHERE id = ?");
+  const result = await deleteBook.run(id);
+  res.json({ message: "Livro excluído com sucesso.", changes: result.changes });
 });
 
 app.listen(PORT, () => {
-  console.log("http://localhost:3000");
+  console.log(`http://localhost:${PORT}`);
 });
