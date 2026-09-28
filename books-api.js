@@ -1,5 +1,5 @@
 async function carregarLivrosDoBanco() {
-  const resposta = await fetch("https://sistema-de-biblioteca-git-main-marcosloll1.vercel.app/books");
+  const resposta = await fetch("https://sistema-de-biblioteca-ecru.vercel.app/books");
   const dados = await resposta.json();
   const livrosConvertidos = dados.map((livro) => {
     return {
@@ -24,7 +24,7 @@ async function carregarLivrosDoBanco() {
 }
 
 async function atualizarStatusLivro(livro) {
-  const resposta = await fetch(`https://sistema-de-biblioteca-git-main-marcosloll1.vercel.app/books/${livro.id}`, {
+  const resposta = await fetch(`https://sistema-de-biblioteca-ecru.vercel.app/books/${livro.id}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -37,7 +37,7 @@ async function atualizarStatusLivro(livro) {
 }
 
 async function adicionarLivroNoBanco(livro) {
-  const response = await fetch("https://sistema-de-biblioteca-git-main-marcosloll1.vercel.app/books", {
+  const response = await fetch("https://sistema-de-biblioteca-ecru.vercel.app/books", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -63,7 +63,7 @@ async function adicionarLivroNoBanco(livro) {
 }
 
 async function atualizarDadosLivro(livro) {
-  const resposta = await fetch(`https://sistema-de-biblioteca-git-main-marcosloll1.vercel.app/books/${livro.id}`, {
+  const resposta = await fetch(`https://sistema-de-biblioteca-ecru.vercel.app/books/${livro.id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -78,7 +78,7 @@ async function atualizarDadosLivro(livro) {
   return resposta.json();
 }
 async function excluirLivroDoBanco(id) {
-  const response = await fetch(`https://sistema-de-biblioteca-git-main-marcosloll1.vercel.app/books/${id}`, {
+  const response = await fetch(`https://sistema-de-biblioteca-ecru.vercel.app/books/${id}`, {
     method: "DELETE",
   });
   return response.json();
